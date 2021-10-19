@@ -10,10 +10,13 @@
 class MainPage : public ContainerWidget
 {
 public:
-    MainPage();
+    MainPage(SerikBLDCore::DB* _mDB);
 
 
     void initPage();
+
+private:
+    SerikBLDCore::DB *mDB;
 };
 
 #endif // MAINPAGE_H

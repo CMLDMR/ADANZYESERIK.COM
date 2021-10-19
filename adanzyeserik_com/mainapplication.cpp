@@ -1,10 +1,25 @@
 #include "mainapplication.h"
 
 
+#include "user/adminpanel.h"
+
 
 MainApplication::MainApplication(const WEnvironment &env)
     :WApplication(env)
 {
+
+    try {
+        mClient = new mongocxx::client(mongocxx::uri("mongodb://HooverPhonic:Aa<05358564091>@192.168.0.11:27018/?authSource=admin"));
+    } catch (mongocxx::exception& e) {
+        std::cout << "MongoDB Connection Error: " << e.what() << std::endl;
+        root()->addWidget(cpp14::make_unique<WText>("Driver Yüklenemedi!"));
+        return;
+    }
+
+    db = mClient->database("ADANZYE");
+
+
+
 
 
     wApp->addMetaHeader(MetaHeaderType::Meta,"Content-Type","text/html; charset=windows-1254");
@@ -25,12 +40,6 @@ MainApplication::MainApplication(const WEnvironment &env)
 
     Wt::WApplication::instance()->addMetaLink("logo.ico","shortcut icon","","","image/x-icon","16x16",false);
     Wt::WApplication::instance()->setTitle("ADANZYE SERİK");
-
-
-
-
-
-
 
     root()->setContentAlignment(AlignmentFlag::Center);
 
@@ -53,14 +62,15 @@ MainApplication::MainApplication(const WEnvironment &env)
         bimage->setOffsets(0,AllSides);
         bimage->addStyleClass("bacGround");
         bimage->setPositionScheme(PositionScheme::Absolute);
+        bimage->setZIndex(-100);
 
     }
 
 
     if( EnvParameters() ){
-        root()->addWidget(cpp14::make_unique<WText>("<h1>Hello World REQ</h1>"));
+        root()->addWidget(cpp14::make_unique<AdminPanel>(new SerikBLDCore::DB(&db)))->setMaximumSize(1280,WLength::Auto);
     }else{
-        mMainPage = root()->addWidget(cpp14::make_unique<MainPage>());
+        mMainPage = root()->addWidget(cpp14::make_unique<MainPage>(new SerikBLDCore::DB(&db)));
     }
 
 
@@ -73,7 +83,9 @@ MainApplication::~MainApplication()
 {
 
     LOG << "Destructor" << LOGEND;
-//    delete mResource;
+    delete mClient;
+
+
 //    mResource = nullptr;
 
 }

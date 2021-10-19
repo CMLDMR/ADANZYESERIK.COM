@@ -393,7 +393,7 @@ FileUploaderWidget::FileUploaderWidget(const std::string &title)
         {
             QFileInfo info(item.clientFileName().c_str());
 
-            QString _fileName = QString("%1%2.%3").arg(QUuid::createUuid().toString()).arg(item.clientFileName().c_str()).arg(info.suffix());
+            QString _fileName = QString("%1.%3").arg(QUuid::createUuid().toString(QUuid::WithoutBraces)).arg(info.suffix());
 
             mFileLocation = QString("docroot/tempfile/")+_fileName;
             mDoocRootLocation = QString("tempfile/")+ _fileName;
